@@ -1,20 +1,51 @@
-import com.ib.client.Contract
-import com.ib.client.Order
-import com.ib.client.OrderType
-import com.ib.client.Types
+import com.ib.client.*
+import com.ib.contracts.StkContract
 import com.ib.controller.ApiController
-import iex.Endpoints
-import iex.IexApiController
 import java.lang.Exception
 import java.lang.StringBuilder
 import java.util.ArrayList
 
-object connectionHandler: ApiController.IConnectionHandler {
+fun main(args: Array<String>) {
+    val inLogLambda = {inLog: String -> println(inLog)}
+    val outLogLambda = {outLog: String -> println(outLog)}
+    val controller = ApiController(ConnectionHandler, inLogLambda, outLogLambda)
+
+    controller.connect("127.0.0.1",7497,0,null)
+
+    for(i in 1..5) {
+        if(ConnectionHandler.isConnected) break;
+        println("waiting for connection...")
+        Thread.sleep(500)
+    }
+    if(!ConnectionHandler.isConnected){
+        println("unable to establish a connection...")
+        return
+    }
+
+    val contract = StkContract("AAPL")
+
+    val order = Order()
+    order.action(Types.Action.BUY)
+    order.orderType(OrderType.MKT)
+    order.totalQuantity(1.0)
+    order.account("DU1276521")
+    order.clientId(0)
+
+    controller.placeOrModifyOrder(contract, order, OrderHandler)
+
+    controller.disconnect()
+}
+
+object ConnectionHandler: ApiController.IConnectionHandler {
+    var isConnected = false;
+
     override fun connected() {
+        isConnected = true;
         println("connected...")
     }
 
     override fun disconnected() {
+        isConnected = false;
         println("disconnected...")
     }
 
@@ -28,7 +59,8 @@ object connectionHandler: ApiController.IConnectionHandler {
     }
 
     override fun message(id: Int, errorCode: Int, errorMsg: String?) {
-        println(StringBuilder().append("id: ")
+        println(StringBuilder()
+            .append("id: ")
             .append(id)
             .append(" error code: ")
             .append(errorCode)
@@ -40,86 +72,38 @@ object connectionHandler: ApiController.IConnectionHandler {
         println("show:")
         println(string)
     }
-
 }
 
-fun main(args: Array<String>) {
-    val inLogLambda = {inLog: String -> println(inLog)}
-    val outLogLambda = {outLog: String -> println(outLog)}
-    val controller = ApiController(connectionHandler, inLogLambda, outLogLambda)
-    controller.connect("127.0.0.1",7497,0,null)
-
-    val contract = Contract()
-    contract.symbol("AAPL")
-    contract.exchange("ARCA") //NYSE
-    contract.secType(Types.SecType.STK)
-    contract.currency("USD")
-
-    val order = Order()
-    order.orderId(1)
-    order.action(Types.Action.BUY)
-    order.orderType(OrderType.MKT)
-    order.totalQuantity(100.0)
-    order.account("DU1276521")
-    order.clientId(0)
-
-    controller.client().placeOrder(contract,order)
-
-    controller.disconnect()
-}
-
-class Stock {
-    var stockId: Int = 0
-    var symbol: String = ""
-
-    constructor(stockId: Int, symbol: String) {
-        this.stockId = stockId
-        this.symbol = symbol
+object OrderHandler: ApiController.IOrderHandler{
+    override fun orderState(orderState: OrderState?) {
+        println(orderState?.status)
     }
 
-    fun createContract(symbol: String, exchange: String) {
-
-    }
-}
-
-class OrderManagement : Thread() {
-
-}
-
-/*
-fun main(args: Array<String>) {
-
-    val apiController = IexApiController()
-    val res = apiController.fetchData(Endpoints.SYMBOLS)
-
-    val parser = Parser()
-    val stringBuilder = StringBuilder(res)
-    val jsonArr: JsonArray<String> = parser.parse(stringBuilder) as JsonArray<String>
-
-    var counter = 0
-
-    jsonArr.mapChildren { obj ->
-        val builder = StringBuilder()
-        builder.append("Symbol: ")
-        builder.append(obj["symbol"])
-        builder.append(", Name: ")
-        builder.append(obj["name"])
-        builder.append(", Date: ")
-        builder.append(obj["date"])
-        builder.append(", Enabled: ")
-        builder.append(obj["isEnabled"])
-        builder.append(", Type: ")
-        builder.append(obj["type"])
-        builder.append(", iexId: ")
-        builder.append(obj["iexId"])
-
-        if(obj["type"]!!.equals("cs")) counter++
-
-        println(builder.toString())
+    override fun orderStatus(
+        status: OrderStatus?,
+        filled: Double,
+        remaining: Double,
+        avgFillPrice: Double,
+        permId: Long,
+        parentId: Int,
+        lastFillPrice: Double,
+        clientId: Int,
+        whyHeld: String?
+    ) {
+        println(StringBuilder().append("status: ").append(status?.toString()))
+        println(StringBuilder().append("filled: ").append(filled))
+        println(StringBuilder().append("remaining: ").append(remaining))
+        println(StringBuilder().append("avgFillPrice: ").append(avgFillPrice))
+        println(StringBuilder().append("permId: ").append(permId))
+        println(StringBuilder().append("parentId: ").append(parentId))
+        println(StringBuilder().append("lastFillPrice: ").append(lastFillPrice))
+        println(StringBuilder().append("clientId: ").append(clientId))
+        println(StringBuilder().append("whyHeld: ").append(whyHeld))
     }
 
-    println(jsonArr.size)
-    println(counter)
+    override fun handle(errorCode: Int, errorMsg: String?) {
+        println(StringBuilder()
+            .append("errorCode: ").append(errorCode)
+            .append("errorMsg: ").append(errorMsg))
+    }
 }
-//symbol,name,date,isEnabled,type,iexId
-*/

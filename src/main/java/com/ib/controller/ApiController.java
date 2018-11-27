@@ -805,13 +805,13 @@ public class ApiController implements EWrapper {
 
 		// when placing new order, assign new order id
 		if (order.orderId() == 0) {
-			order.orderId( m_orderId++);
+			order.orderId(m_orderId++);
 			if (handler != null) {
 				m_orderHandlers.put( order.orderId(), handler);
 			}
 		}
 
-		m_client.placeOrder( contract, order);
+		m_client.placeOrder(contract, order);
 		sendEOM();
 	}
 
