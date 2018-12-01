@@ -1,5 +1,9 @@
 package iex
 
+import com.beust.klaxon.JsonArray
+import com.beust.klaxon.JsonObject
+import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
+
 data class Stock(val symbol: String = "",
                  val companyName: String = "",
                  val exchange: String = "",
@@ -58,13 +62,13 @@ data class Stock(val symbol: String = "",
                  val month1ChangePercent: Double = 0.0,
                  val day5ChangePercent: Double = 0.0,
                  val day30ChangePercent: Double = 0.0,
-                 // val financials: Array<String = arrayOf(""),
-                 // val earnings: Array<String> = arrayOf(""),
+                 //val financials: Array<JsonObject> = arrayOf(JsonObject()),
+                 //val earnings: Array<String> = arrayOf(""),
                  val primaryExchange: String = "",
                  val calculationPrice: String = "",
                  val open: Double = 0.0,
                  // val openTime: String = "",
-                  val close: Double = 0.0,
+                 val close: Double = 0.0,
                  // val closeTime: String = "",
                  val high: Double = 0.0,
                  val low: Double = 0.0,
@@ -99,6 +103,9 @@ data class Stock(val symbol: String = "",
                  val ytdChange:Double = 0.0
                  // val news:Array<String> = arrayOf("")
                  ){
+    lateinit var financials: JsonArray<JsonObject>
+    lateinit var earnings: JsonArray<JsonObject>
+    lateinit var news: JsonArray<JsonObject>
 
     override fun equals(other: Any?): Boolean {
         return super.equals(other)

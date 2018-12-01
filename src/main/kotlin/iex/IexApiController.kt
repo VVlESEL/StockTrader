@@ -30,9 +30,9 @@ fun main(args: Array<String>) {
     println(keyFigures)
 
 */
-    val allSymbols = apiController.getSP500Symbols()
-    val symbols = listOf("AAPL","TSLA","MET","MTD","MGM","KORS","MCHP","MAA")
-    println(allSymbols)
+    //val allSymbols = apiController.getSP500Symbols()
+    val symbols = listOf("AAPL")
+
     println(symbols)
     val types = listOf(Types.company.name,
         Types.stats.name,
@@ -41,21 +41,8 @@ fun main(args: Array<String>) {
         Types.quote.name,
         Types.news.name)
 
-    val res = apiController.getStocksList(allSymbols,types)
-    println(res)
-
-    val filteredList = res.filter { s -> s.peRatio > 5}
-    val filteredList2 = res.filter { s -> !filteredList.contains(s)}
-
-    val filteredSymbols = filteredList.map { s -> s.symbol }
-    val filteredSymbols2 = filteredList2.map { s -> s.symbol }
-
-    println(filteredSymbols)
-    println(filteredSymbols.size)
-
-    println(filteredSymbols2)
-    println(filteredSymbols2.size)
-
+    val res = apiController.getStocksList(symbols,types)
+    println(res[0])
 
     /*
     val dividends = apiController.getDividends("AAPL","2y")
@@ -108,7 +95,6 @@ class IexApiController {
                 println(startIndex)
                 println(i)
                 startIndex = i+1
-                println(dataStringBuilder)
 
                 val jsonObj: JsonObject = parser.parse(dataStringBuilder) as JsonObject
 
@@ -127,28 +113,30 @@ class IexApiController {
                         val stats = obj[statsName] as JsonObject
                         stockObj.putAll(stats)
                     }
-                    val financialsName = Types.financials.name
-                    if(obj[financialsName] != null) {
-                        val financialsArr = (obj[financialsName] as JsonObject)[financialsName] as JsonArray<JsonObject>
-                        stockObj[financialsName] = financialsArr
-                    }
-                    val earningsName = Types.earnings.name
-                    if(obj[earningsName] != null) {
-                        val earningsArr = (obj[earningsName] as JsonObject)[earningsName] as JsonArray<JsonObject>
-                        stockObj[earningsName] = earningsArr
-                    }
                     val quoteName = Types.quote.name
                     if(obj[quoteName] != null) {
                         val quote = obj[quoteName] as JsonObject
                         stockObj.putAll(quote)
                     }
+
+                    val stock = Klaxon().parse<Stock>(stockObj.toJsonString())
+                    if(stock != null) stocksList.add(stock)
+
+                    val financialsName = Types.financials.name
+                    if(obj[financialsName] != null) {
+                        val financialsArr = (obj[financialsName] as JsonObject)[financialsName] as JsonArray<JsonObject>
+                        stock?.financials = financialsArr
+                    }
+                    val earningsName = Types.earnings.name
+                    if(obj[earningsName] != null) {
+                        val earningsArr = (obj[earningsName] as JsonObject)[earningsName] as JsonArray<JsonObject>
+                        stock?.earnings = earningsArr
+                    }
                     val newsName = Types.news.name
                     if(obj[newsName] != null) {
                         val newsArr= obj[newsName] as JsonArray<JsonObject>
-                        stockObj[newsName] = newsArr
+                        stock?.news = newsArr
                     }
-                    val stock = Klaxon().parse<Stock>(stockObj.toJsonString())
-                    if(stock != null) stocksList.add(stock)
                 }
             }
         }
