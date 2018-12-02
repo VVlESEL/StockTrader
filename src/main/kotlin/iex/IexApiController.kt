@@ -13,23 +13,7 @@ import java.net.URL
 fun main(args: Array<String>) {
 
     val apiController = IexApiController()
-/*
-    val allSymbols = apiController.getAllSymbols()
-    println(allSymbols)
-    println(allSymbols.size)
 
-    val sp500 = apiController.getSP500Symbols()
-    println(sp500)
-    println(sp500.size)
-
-    val list = symbols.filter { symbol -> sp500.contains(symbol) }
-    println(list)
-    println(list.size)
-
-    val keyFigures = apiController.getKeyFiguresList(sp500,Types.quote.name)
-    println(keyFigures)
-
-*/
     //val allSymbols = apiController.getSP500Symbols()
     val symbols = listOf("AAPL")
 
