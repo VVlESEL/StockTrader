@@ -2,7 +2,6 @@ package iex
 
 import com.beust.klaxon.JsonArray
 import com.beust.klaxon.JsonObject
-import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
 
 data class Stock(val symbol: String = "",
                  val companyName: String = "",
@@ -115,3 +114,30 @@ data class Stock(val symbol: String = "",
         return super.hashCode()
     }
 }
+
+/*
+Qualität
+1. Eigenkapitalrendite (returnOnEquity)
+2. Gewinnmarge (profitMargin)
+3. Eigenkapitalquote
+
+Bewertung
+4. Kurs-Gewinn-Verhältnis (KGV) über 5 Jahre
+5. Kurs-Gewinn-Verhältnis im aktuellen Jahr (peRatio)
+
+Stimmung
+6. Analystenmeinungen
+7. Reaktion auf die letzten Quartalszahlen
+
+Momentum
+8. Gewinnrevisionen
+9. 6-Monats-Kursverlauf (month6ChangePercent)
+10. 1-Jahres-Kursverlauf (year1ChangePercent)
+11. Kursmomentum
+
+Technik
+12. Reversaleffekt
+
+Wachstum
+13. Gewinnwachstum
+        */

@@ -15,7 +15,7 @@ fun main(args: Array<String>) {
     controller.connect("127.0.0.1",7497,0,null)
 
     for(i in 1..5) {
-        if(ConnectionHandler.isConnected) break;
+        if(ConnectionHandler.isConnected) break
         println("waiting for connection...")
         Thread.sleep(500)
     }
