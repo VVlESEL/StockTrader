@@ -43,7 +43,7 @@ class IexApiController {
         val httpURLConnection = url.openConnection() as HttpURLConnection
         val inputStream = httpURLConnection.inputStream
         val inputStreamReader = InputStreamReader(inputStream)
-        val bufferedReader = BufferedReader(inputStreamReader)
+        val bufferedReader = BufferedReader(inputStreamReader!!)
 
         val response = StringBuffer()
         var inputLine = bufferedReader.readLine()

@@ -16,7 +16,7 @@ lateinit var stocks: List<Stock>
 fun main(args: Array<String>) {
 
     val iexApiController = IexApiController()
-    val symbols = iexApiController.getSP500Symbols().subList(0,20)
+    val symbols = iexApiController.getSP500Symbols()//.subList(0,20)
     val types = listOf(Types.company.name,Types.quote.name,Types.stats.name)
     stocks = FXCollections.observableArrayList(iexApiController.getStocksList(symbols,types))
 
