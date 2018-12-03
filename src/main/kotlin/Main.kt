@@ -18,7 +18,16 @@ fun main(args: Array<String>) {
     val iexApiController = IexApiController()
     val symbols = iexApiController.getSP500Symbols()//.subList(0,20)
     val types = listOf(Types.company.name,Types.quote.name,Types.stats.name)
-    stocks = FXCollections.observableArrayList(iexApiController.getStocksList(symbols,types))
+    stocks = iexApiController.getStocksList(symbols,types)
+
+    println("size: ${stocks.size}")
+
+    stocks = stocks.filter { stock -> stock.peRatio > 0.0 && stock.peRatio < 15.0 &&
+                                    stock.year5ChangePercent > 0.5}
+
+    println("size: ${stocks.size}")
+
+    stocks = stocks.observable()
 
     Application.launch(HelloWorldApp::class.java, *args)
 }
@@ -54,6 +63,7 @@ class HelloWorld : View() {
         val columnsStats: ArrayList<TableColumn<Stock, Any?>> = ArrayList()
         val columnsQuote: ArrayList<TableColumn<Stock, Any?>> = ArrayList()
 
+        @Suppress("UNCHECKED_CAST")
         tableview(stocks as ObservableList<Stock>) {
             vgrow = Priority.ALWAYS
 
@@ -173,7 +183,7 @@ class HelloWorld : View() {
             //columnResizePolicy = SmartResize.POLICY
         }
 
-        tabPane.selectionModel.selectedItemProperty().addListener { value, t1, t2 ->
+        tabPane.selectionModel.selectedItemProperty().addListener { _, _, t2 ->
             when(t2.text) {
                 "Company" -> {
                     columnsCompany.forEach { it.isVisible = true }

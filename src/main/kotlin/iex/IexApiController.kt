@@ -65,6 +65,7 @@ class IexApiController {
     /**
      * Returns a list of the requested stocks containing information about the requested types
      */
+    @Suppress("UNCHECKED_CAST")
     fun getStocksList(symbolsList: List<String>, typesList: List<String>): List<Stock> {
         val stocksList = ArrayList<Stock>()
 
@@ -159,6 +160,7 @@ class IexApiController {
     /**
      * Returns a list of all available symbols
      */
+    @Suppress("UNCHECKED_CAST")
     fun getAllSymbols(): ArrayList<String> {
         val res = fetchData(Endpoints.SYMBOLS)
 
@@ -181,7 +183,7 @@ class IexApiController {
      * Returns a list of all S&P500 symbols
      */
     fun getSP500Symbols(): ArrayList<String> {
-        val soup = Jsoup.parse(URL("https://en.wikipedia.org/wiki/List_of_S%26P_500_companies"),3000)
+        val soup = Jsoup.parse(URL("https://en.wikipedia.org/wiki/List_of_S%26P_500_companies"),5000)
         val table = soup.select("table").first()
         val rows = table.select("tr")
 
