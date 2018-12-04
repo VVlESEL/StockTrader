@@ -2,7 +2,6 @@ import iex.IexApiController
 import iex.Stock
 import iex.Types
 import javafx.application.Application
-import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.scene.control.TabPane
 import javafx.scene.control.TableCell
@@ -21,10 +20,10 @@ fun main(args: Array<String>) {
     stocks = iexApiController.getStocksList(symbols,types)
 
     println("size: ${stocks.size}")
-
+/*
     stocks = stocks.filter { stock -> stock.peRatio > 0.0 && stock.peRatio < 15.0 &&
                                     stock.year5ChangePercent > 0.5}
-
+*/
     println("size: ${stocks.size}")
 
     stocks = stocks.observable()
@@ -88,7 +87,6 @@ class HelloWorld : View() {
             columnsStats.add(readonlyColumn("W52 Change", Stock::week52change))
             (columnsStats.last() as TableColumn<Stock, Double>).cellFormat(doubleFormatter)
             columnsStats.add(readonlyColumn("Dividend Rate", Stock::dividendRate))
-            (columnsStats.last() as TableColumn<Stock, Double>).cellFormat(doubleFormatter)
             columnsStats.add(readonlyColumn("Dividend Yield", Stock::dividendYield))
             (columnsStats.last() as TableColumn<Stock, Double>).cellFormat(doubleFormatter)
             columnsStats.add(readonlyColumn("Latest EPS", Stock::latestEPS))
